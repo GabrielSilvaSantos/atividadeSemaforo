@@ -2,10 +2,9 @@ package controller;
 
 import java.util.concurrent.Semaphore;
 
-public class ThreadCarro extends Thread{
+public class ThreadCarro extends Thread {
 	private int idCarro;
-	private static int posicaoChegada;
-	private static int posicaoSaida;
+	static int sentido;
 	private Semaphore semaforo;
 
 	public ThreadCarro(int idCarro, Semaphore semaforo) {
@@ -14,32 +13,54 @@ public class ThreadCarro extends Thread{
 	}
 
 	public void run() {
+		carroChegando();
 		try {
 			// P (Acquire)
 			semaforo.acquire();
-			carroParado();
+			carroFarol();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			// V (Release);
 			semaforo.release();
-			carroSaiu();
+			carroPassou();
 		}
 	}
 
-
-	private void carroParado() {
-		System.out.println("#" + idCarro + " parou no sinal.");
-		int tempo = (int) ((Math.random() * 401) + 100);
+	private void carroChegando() {
 		try {
-			sleep(tempo);
+			sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.out.println("O CARRO" + "#" + idCarro + " chegou no farol ");
 	}
 
-	private void carroSaiu() {
-		posicaoSaida++;
-		System.out.println("#" + idCarro + " foi o " + posicaoSaida + "o. a sair");
+	private void carroFarol() {
+
+		try {
+			sleep(30);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		switch (sentido) {
+		case 0:
+			System.out.println("\nO CARRO" + "#" + idCarro + " parou no SUL e saiu NORTE");
+			break;
+		case 1:
+			System.out.println("\nO CARRO" + "#" + idCarro + " parou no NORTE e saiu SUL");
+			break;
+		case 2:
+			System.out.println("\nO CARRO" + "#" + idCarro + " parou no LESTE e saiu OESTE");
+			break;
+		case 3:
+			System.out.println("\nO CARRO" + "#" + idCarro + " parou no OESTE e saiu LESTE");
+			break;
+		}
+		sentido++;
+	}
+
+	private void carroPassou() {
+		System.out.println("proximo carro liberado");
 	}
 }
